@@ -1,0 +1,142 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kilian Bellic - Coiffeur Barbier</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#080a08;color:white;font-family:Arial,sans-serif}
+header{padding:30px 20px;text-align:center;background:#111}
+h1{margin:0;color:#97ff14;font-size:27px}
+header p{color:#aaa}
+main{max-width:520px;margin:auto;padding:20px}
+section{background:#151815;padding:20px;border-radius:16px;margin-bottom:18px}
+h2{font-size:19px;margin-top:0}
+.service{display:flex;justify-content:space-between;align-items:center;padding:15px 0;border-bottom:1px solid #333;cursor:pointer}
+.service:last-child{border:0}
+.price{color:#97ff14;font-weight:bold}
+.selected{color:#97ff14}
+label{display:block;margin:15px 0}
+input[type=date]{width:100%;padding:14px;background:#222;color:white;border:1px solid #555;border-radius:10px;font-size:16px}
+.slots{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:15px}
+.slot{background:#222;color:white;border:1px solid #555;border-radius:10px;padding:13px 4px}
+.slot.active{background:#97ff14;color:black;border-color:#97ff14;font-weight:bold}
+button{cursor:pointer;font-size:15px}
+.book{width:100%;background:#97ff14;border:0;border-radius:12px;padding:17px;font-weight:bold;margin-top:20px}
+.note{color:#aaa;font-size:12px;text-align:center;line-height:1.5}
+.summary{line-height:1.8}
+</style>
+</head>
+<body>
+<header>
+<h1>KILIAN BELLIC</h1>
+<p>COIFFEUR - BARBIER</p>
+</header>
+<main>
+<section>
+<h2>Choisissez votre prestation</h2>
+<div class="service selected" onclick="choose(0,this)">
+<span>Coupe simple<br><small>30 minutes</small></span>
+<span class="price">20 €</span>
+</div>
+<div class="service" onclick="choose(1,this)">
+<span>Coupe + barbe<br><small>30 minutes</small></span>
+<span class="price">25 €</span>
+</div>
+<div class="service" onclick="choose(2,this)">
+<span>Barbe seule<br><small>15 minutes</small></span>
+<span class="price">12 €</span>
+</div>
+<label id="shampooBox">
+<input type="checkbox" id="shampoo" onchange="update()">
+Ajouter un shampoing (+3 €, sans temps supplémentaire)
+</label>
+</section>
+<section>
+<h2>Choisissez votre date</h2>
+<input type="date" id="date" onchange="showSlots()">
+<p class="note">Du lundi au samedi, de 10 h à 20 h</p>
+<h2>Créneaux disponibles</h2>
+<div class="slots" id="slots"></div>
+</section>
+<section>
+<h2>Votre réservation</h2>
+<div class="summary" id="summary"></div>
+<button class="book" onclick="book()">Confirmer mon rendez-vous</button>
+<p class="note">Démonstration uniquement : aucun vrai rendez-vous n'est enregistré. Paiement sur place.</p>
+</section>
+</main>
+<script>
+const services=[
+{name:"Coupe simple",price:20,duration:30},
+{name:"Coupe + barbe",price:25,duration:30},
+{name:"Barbe seule",price:12,duration:15}
+];
+let selected=0;
+let selectedTime="";
+const dateInput=document.getElementById("date");
+function localDate(d){
+return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+}
+dateInput.min=localDate(new Date());
+dateInput.value=localDate(new Date());
+function choose(n,el){
+selected=n;
+selectedTime="";
+document.querySelectorAll(".service").forEach(x=>x.classList.remove("selected"));
+el.classList.add("selected");
+if(n===2)document.getElementById("shampoo").checked=false;
+document.getElementById("shampooBox").style.display=n===2?"none":"block";
+showSlots();
+}
+function showSlots(){
+selectedTime="";
+const area=document.getElementById("slots");
+area.innerHTML="";
+const date=new Date(dateInput.value+"T12:00:00");
+if(!dateInput.value||date.getDay()===0){
+area.textContent="Salon fermé le dimanche.";
+update();return;
+}
+const now=new Date();
+let count=0;
+for(let min=600;min+services[selected].duration<=1200;min+=15){
+const start=new Date(dateInput.value+"T00:00:00");
+start.setMinutes(min);
+if(start<=now)continue;
+const time=String(Math.floor(min/60)).padStart(2,"0")+":"+String(min%60).padStart(2,"0");
+const btn=document.createElement("button");
+btn.className="slot";
+btn.textContent=time;
+btn.onclick=()=>{
+selectedTime=time;
+document.querySelectorAll(".slot").forEach(b=>b.classList.remove("active"));
+btn.classList.add("active");
+update();
+};
+area.appendChild(btn);
+count++;
+}
+if(!count)area.textContent="Aucun créneau restant pour cette date.";
+update();
+}
+function update(){
+const s=services[selected];
+const shampoo=selected!==2&&document.getElementById("shampoo").checked;
+document.getElementById("summary").innerHTML=
+"Prestation : "+s.name+
+"<br>Date : "+(dateInput.value||"À choisir")+
+"<br>Heure : "+(selectedTime||"À choisir")+
+"<br>Durée : "+s.duration+" min"+
+"<br><strong>Total : "+(s.price+(shampoo?3:0))+" €</strong>";
+}
+function book(){
+if(!selectedTime){alert("Choisissez d'abord un créneau.");return;}
+alert("APERÇU : "+services[selected].name+" le "+dateInput.value+" à "+selectedTime+". Aucun rendez-vous réel n'a été créé.");
+}
+showSlots();
+</script>
+</body>
+</html>
