@@ -102,7 +102,7 @@ update();return;
 }
 const now=new Date();
 let count=0;
-for(let min=600;min+services[selected].duration<=1200;min+=15){
+for(let min=600;min+30<=1200;min+=30){
 const start=new Date(dateInput.value+"T00:00:00");
 start.setMinutes(min);
 if(start<=now)continue;
