@@ -63,6 +63,15 @@ Ajouter un shampoing (+3 €, sans temps supplémentaire)
 </section>
 <section>
 <h2>Votre réservation</h2>
+<label for="clientName">Nom et prénom</label>
+<input type="text" id="clientName"
+placeholder="Votre nom et prénom" required
+style="width:100%;padding:14px;background:#222;color:white;border:1px solid #555;border-radius:10px;font-size:16px;">
+
+<label for="clientPhone">Numéro de téléphone</label>
+<input type="tel" id="clientPhone"
+placeholder="06 12 34 56 78" required
+style="width:100%;padding:14px;background:#222;color:white;border:1px solid #555;border-radius:10px;font-size:16px;">
 <div class="summary" id="summary"></div>
 <button class="book" onclick="book()">Confirmer mon rendez-vous</button>
 <p class="note">Démonstration uniquement : aucun vrai rendez-vous n'est enregistré. Paiement sur place.</p>
